@@ -3,8 +3,8 @@
 #include <mruby/class.h>
 #include <mruby/string.h>
 #include <mruby/variable.h>
-#include <bi/font.h>
 #include <bi/util.h>
+#include <bi/ext/font.h>
 #include <stdlib.h>
 #include "bi_ext_inner_macro.h"
 

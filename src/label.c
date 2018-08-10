@@ -4,7 +4,7 @@
 #include <mruby/string.h>
 #include <mruby/variable.h>
 #include <bi/node.h>
-#include <bi/font.h>
+#include <bi/ext/font.h>
 #include <stdlib.h>
 
 // Bi::Label class

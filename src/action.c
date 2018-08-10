@@ -4,7 +4,7 @@
 #include <mruby/array.h>
 #include <mruby/variable.h>
 #include <bi/util.h>
-#include <bi/action.h>
+#include <bi/ext/action.h>
 #include <stdlib.h>
 #include "bi_ext_inner_macro.h"
 
