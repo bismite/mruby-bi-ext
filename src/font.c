@@ -42,6 +42,15 @@ static mrb_value mrb_font_initialize(mrb_state *mrb, mrb_value self)
 
 _GET_(BiFontAtlas,font_size,bi_mrb_fixnum_value);
 
+static mrb_value mrb_font_set_color(mrb_state *mrb, mrb_value self)
+{
+    mrb_int r,g,b,a;
+    mrb_get_args(mrb, "iiii", &r, &g, &b, &a);
+    BiFontAtlas *font = DATA_PTR(self);
+    bi_set_color(font->color, r,g,b,a);
+    return self;
+}
+
 void mrb_init_font(mrb_state *mrb, struct RClass *bi)
 {
   struct RClass *font;
@@ -50,5 +59,5 @@ void mrb_init_font(mrb_state *mrb, struct RClass *bi)
 
   mrb_define_method(mrb, font, "initialize", mrb_font_initialize, MRB_ARGS_REQ(2)); // texture_image, layout_filename
   mrb_define_method(mrb, font, "size", mrb_BiFontAtlas_get_font_size, MRB_ARGS_NONE());
-
+  mrb_define_method(mrb, font, "set_color", mrb_font_set_color, MRB_ARGS_REQ(4));
 }
