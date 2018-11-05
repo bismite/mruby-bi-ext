@@ -37,6 +37,7 @@ static mrb_value mrb_label_initialize(mrb_state *mrb, mrb_value self)
     bi_node_init(node);
     DATA_PTR(self) = node;
     DATA_TYPE(self) = &mrb_label_data_type;
+    node->userdata = mrb_ptr(self);
 
     mrb_iv_set(mrb, self, mrb_intern_cstr(mrb,"@font"), font_obj);
 
