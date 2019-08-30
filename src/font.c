@@ -11,11 +11,33 @@
 // Bi::Font class
 static struct mrb_data_type const mrb_font_data_type = { "Font", mrb_free };
 
+static mrb_value mrb_bi_font_read(mrb_state *mrb, mrb_value self)
+{
+    mrb_value img_obj, layout_file;
+    mrb_get_args(mrb, "oS", &img_obj, &layout_file);
+
+    BiFontAtlas *font = mrb_malloc(mrb,sizeof(BiFontAtlas));
+    BiTextureImage* img = DATA_PTR(img_obj);
+
+    bi_load_font_layout_from_file( mrb_string_value_cstr(mrb,&layout_file), font );
+    bi_set_color(font->color, 0xff,0xff,0xff,0xff);
+    font->texture_image = img;
+
+    struct RClass *bi = mrb_class_get(mrb, "Bi");
+    struct RClass *klass = mrb_class_get_under(mrb,bi,"Font");
+
+    struct RData *data = mrb_data_object_alloc(mrb,klass,font,&mrb_font_data_type);
+    mrb_value val = mrb_obj_value(data);
+
+    mrb_iv_set(mrb, val, mrb_intern_cstr(mrb,"@texture_image"), img_obj);
+
+    return val;
+}
+
 static mrb_value mrb_font_initialize(mrb_state *mrb, mrb_value self)
 {
-    // image, layout
-    mrb_value img_obj, layout_name;
-    mrb_get_args(mrb, "oS", &img_obj, &layout_name);
+    mrb_value img_obj, layout_data;
+    mrb_get_args(mrb, "oS", &img_obj, &layout_data);
 
     BiFontAtlas *font = DATA_PTR(self);
     if (font == NULL) {
@@ -28,7 +50,7 @@ static mrb_value mrb_font_initialize(mrb_state *mrb, mrb_value self)
     // TODO: error check
     BiTextureImage* img = DATA_PTR(img_obj);
 
-    bi_load_font_layout( mrb_string_value_cstr(mrb,&layout_name), font );
+    bi_load_font_layout( RSTRING_PTR(layout_data), RSTRING_LEN(layout_data), font );
     bi_set_color(font->color, 0xff,0xff,0xff,0xff);
     font->texture_image = img;
 
@@ -57,7 +79,9 @@ void mrb_init_font(mrb_state *mrb, struct RClass *bi)
   font = mrb_define_class_under(mrb, bi, "Font", mrb->object_class);
   MRB_SET_INSTANCE_TT(font, MRB_TT_DATA);
 
-  mrb_define_method(mrb, font, "initialize", mrb_font_initialize, MRB_ARGS_REQ(2)); // texture_image, layout_filename
+  mrb_define_class_method(mrb, font, "read", mrb_bi_font_read, MRB_ARGS_REQ(2) ); // texture_image, layout_filename
+
+  mrb_define_method(mrb, font, "initialize", mrb_font_initialize, MRB_ARGS_REQ(2)); // texture_image, layout_data
   mrb_define_method(mrb, font, "size", mrb_BiFontAtlas_get_font_size, MRB_ARGS_NONE());
   mrb_define_method(mrb, font, "set_color", mrb_font_set_color, MRB_ARGS_REQ(4));
 }
