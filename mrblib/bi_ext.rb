@@ -26,3 +26,13 @@ end
 class Bi::Action::Base
   attr_accessor :callback
 end
+
+module Bi::Version
+  def self.biext
+    "#{BI_EXT_MAJOR}.#{BI_EXT_MINOR}.#{BI_EXT_PATCH}"
+  end
+
+  def self.mruby_biext
+    "0.3.0"
+  end
+end
