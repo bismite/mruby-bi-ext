@@ -41,6 +41,11 @@ static mrb_value mrb_label_initialize(mrb_state *mrb, mrb_value self)
 
     mrb_iv_set(mrb, self, mrb_intern_cstr(mrb,"@font"), font_obj);
 
+    mrb_iv_set(mrb, self, mrb_intern_cstr(mrb,"@r"), mrb_fixnum_value(0xff));
+    mrb_iv_set(mrb, self, mrb_intern_cstr(mrb,"@g"), mrb_fixnum_value(0xff));
+    mrb_iv_set(mrb, self, mrb_intern_cstr(mrb,"@b"), mrb_fixnum_value(0xff));
+    mrb_iv_set(mrb, self, mrb_intern_cstr(mrb,"@a"), mrb_fixnum_value(0xff));
+
     return self;
 }
 
@@ -48,15 +53,29 @@ static mrb_value mrb_label_set_text(mrb_state *mrb, mrb_value self)
 {
     mrb_value text;
     mrb_get_args(mrb, "S", &text );
-
-    BiNode* n = DATA_PTR(self);
-
-    // XXX: check error
+    mrb_iv_set(mrb, self, mrb_intern_cstr(mrb,"@text"), text);
+    uint8_t r = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@r")));
+    uint8_t g = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@g")));
+    uint8_t b = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@b")));
+    uint8_t a = mrb_fixnum(mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@a")));
     mrb_value font_obj = mrb_iv_get(mrb, self, mrb_intern_lit(mrb, "@font"));
     BiFontAtlas* f = DATA_PTR(font_obj);
+    BiNode* n = DATA_PTR(self);
+    bi_update_label(n, mrb_string_value_cstr(mrb,&text), f, r,g,b,a );
 
-    bi_update_label(n, mrb_string_value_cstr(mrb,&text), f );
+    return self;
+}
 
+static mrb_value mrb_label_set_text_color(mrb_state *mrb, mrb_value self)
+{
+    mrb_int r,g,b,a;
+    mrb_get_args(mrb, "iiii", &r, &g, &b, &a );
+    mrb_iv_set(mrb, self, mrb_intern_cstr(mrb,"@r"), mrb_fixnum_value(r));
+    mrb_iv_set(mrb, self, mrb_intern_cstr(mrb,"@g"), mrb_fixnum_value(g));
+    mrb_iv_set(mrb, self, mrb_intern_cstr(mrb,"@b"), mrb_fixnum_value(b));
+    mrb_iv_set(mrb, self, mrb_intern_cstr(mrb,"@a"), mrb_fixnum_value(a));
+    BiNode* n = DATA_PTR(self);
+    bi_update_color(n,r,g,b,a);
     return self;
 }
 
@@ -71,4 +90,5 @@ void mrb_init_label(mrb_state *mrb, struct RClass *bi)
 
   mrb_define_method(mrb, label, "initialize", mrb_label_initialize, MRB_ARGS_REQ(1));
   mrb_define_method(mrb, label, "set_text", mrb_label_set_text, MRB_ARGS_REQ(1));
+  mrb_define_method(mrb, label, "set_text_color", mrb_label_set_text_color, MRB_ARGS_REQ(4)); // r,g,b,a
 }

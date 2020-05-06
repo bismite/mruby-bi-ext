@@ -27,12 +27,21 @@ class Bi::Action::Base
   attr_accessor :callback
 end
 
+class Bi::Label
+  attr_reader :text
+  def text=(text)
+    self.set_text text
+  end
+  alias :set_background_color :set_color
+  alias :set_color :set_text_color
+end
+
 module Bi::Version
   def self.biext
     "#{BI_EXT_MAJOR}.#{BI_EXT_MINOR}.#{BI_EXT_PATCH}"
   end
 
   def self.mruby_biext
-    "0.3.0"
+    "0.4.0"
   end
 end
