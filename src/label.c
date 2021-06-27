@@ -12,9 +12,12 @@ static void label_free(mrb_state *mrb, void *p)
 {
   BiNode* node = (BiNode*)p;
   if (NULL != node) {
-    for(int i=0;i<node->children_size;i++){
-      free(node->children[i]);
+    for(int i=0;i<node->children.size;i++){
+      BiNode* n = node->children.objects[i];
+      free(n->texture_mapping);
+      free(n);
     }
+    free(node->children.objects);
     mrb_free(mrb, node);
   }
 }
