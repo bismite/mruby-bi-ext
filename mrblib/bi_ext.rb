@@ -46,6 +46,6 @@ module Bi::Version
   end
 
   def self.mruby_biext
-    "0.4.0"
+    "0.4.1"
   end
 end
